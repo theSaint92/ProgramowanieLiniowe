@@ -43,7 +43,12 @@ public class FunkcjaCelu {
 
 	@Override
 	public String toString() {
-		return x1 + "x1 + " + x2 + "x2 -> " + cel;
+		String result = "<html>f(x,y) = ";
+		if (x1 != 0) result += x1 + "x ";
+		if (x1 != 0 && x2 != 0) result += "+ ";
+		if (x2 != 0) result += x2 + "y ";
+		result += "&rarr " + cel;
+		return result;
 	}
 	
 	

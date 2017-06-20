@@ -1,6 +1,8 @@
 package gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,21 +13,34 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import logic.ProgramowanieLiniowe;
+
 
 public class MainWindow extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -3880026026104218593L;
 	
-	
-	private JTextField textFunkcjaCelu;
+	private fCeluWindow fcelu;
+	private ProgramowanieLiniowe prog;
+	private JLabel textFunkcjaCelu;
 	private JButton edytujFunkcjeCelu;
 	private JTextArea textOgraniczenia;
 	private JButton dodajLubUsunOgraniczenie;
 	
 	
 
-	public MainWindow() {
-		setSize(800, 500);
+	public MainWindow(ProgramowanieLiniowe prog) {
+		
+		//Okno funkcji celu
+		fcelu = new fCeluWindow(prog,this);
+		
+		//Okno Ograniczen
+		
+		this.prog = prog;
+		prog.addOgraniczenie(3, 5, ">=", 7);
+		prog.editFunkcjaCelu(2, 3, "min");
+				
+		setSize(700, 500);
 		setTitle("Programowanie Liniowe");
 		setLayout(null);
 		
@@ -45,12 +60,12 @@ public class MainWindow extends JFrame implements ActionListener {
 		menuPomoc.add(menuOProgramie);
 		
 		//labelFunkcjaCelu
-		JLabel labelFunkcjaCelu = new JLabel("FUNKCJA CELU:");
+		JLabel labelFunkcjaCelu = new JLabel("<html><center>FUNKCJA CELU:</center></html>");
 		labelFunkcjaCelu.setBounds(20, 20, 300, 20);
 		add(labelFunkcjaCelu);
 		
 		//TEXTFIELD textFunkcjaCelu
-		textFunkcjaCelu = new JTextField("Funkcja Celu");
+		textFunkcjaCelu = new JLabel("Funkcja Celu niezdefiniowana");
 		textFunkcjaCelu.setBounds(20,40,300,20);
 		add(textFunkcjaCelu);
 		
@@ -79,11 +94,44 @@ public class MainWindow extends JFrame implements ActionListener {
 		dodajLubUsunOgraniczenie.addActionListener(this);
 		add(dodajLubUsunOgraniczenie);
 		
+		
+
+		
+		
 	}
+	
+	
+
+	public JLabel getTextFunkcjaCelu() {
+		return textFunkcjaCelu;
+	}
+
+
+
+	public JButton getEdytujFunkcjeCelu() {
+		return edytujFunkcjeCelu;
+	}
+
+
+
+	public JTextArea getTextOgraniczenia() {
+		return textOgraniczenia;
+	}
+
+
+
+	public JButton getDodajLubUsunOgraniczenie() {
+		return dodajLubUsunOgraniczenie;
+	}
+
+
 
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(dodajLubUsunOgraniczenie)) {
 			
+		}
+		if(e.getSource().equals(edytujFunkcjeCelu)) {
+			fcelu.setVisible(true);
 		}
 		
 	}

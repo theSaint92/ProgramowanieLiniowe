@@ -8,7 +8,11 @@ public class Test {
 	public static void main(String[] args) {
 		ProgramowanieLiniowe prog = new ProgramowanieLiniowe();
 		prog.addOgraniczenie(3, 5, ">=", 7);
-		prog.getResult();
+		prog.editFunkcjaCelu(2, 3, "min");
+		
+		System.out.println(prog.getResult());
+		
+		prog.rysujZbiorDopuszczalny(400);
 		
 
 	}
