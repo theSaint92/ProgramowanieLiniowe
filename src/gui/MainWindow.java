@@ -1,16 +1,20 @@
 package gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import logic.Ograniczenie;
 import logic.ProgramowanieLiniowe;
@@ -19,6 +23,10 @@ import logic.ProgramowanieLiniowe;
 public class MainWindow extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -3880026026104218593L;
+	
+	JMenuItem menuEksportXML;
+	JMenuItem menuImportXML;
+	JMenuItem menuOProgramie;
 	
 	private fCeluWindow fcelu;
 	private OgraniczeniaWindow ograniczenia;
@@ -47,9 +55,9 @@ public class MainWindow extends JFrame implements ActionListener {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuPlik = new JMenu("Plik");
 		JMenu menuPomoc = new JMenu("Pomoc");
-		JMenuItem menuEksportXML = new JMenuItem("Eksport do XML");
-		JMenuItem menuImportXML = new JMenuItem("Import z XML");
-		JMenuItem menuOProgramie = new JMenuItem("O programie");
+		menuEksportXML = new JMenuItem("Eksport do XML");
+		menuImportXML = new JMenuItem("Import z XML");
+		menuOProgramie = new JMenuItem("O programie");
 		
 		setJMenuBar(menuBar);
 		menuBar.add(menuPlik);
@@ -57,6 +65,10 @@ public class MainWindow extends JFrame implements ActionListener {
 		menuPlik.add(menuEksportXML);
 		menuPlik.add(menuImportXML);
 		menuPomoc.add(menuOProgramie);
+		
+		menuEksportXML.addActionListener(this);
+		menuImportXML.addActionListener(this);
+		menuOProgramie.addActionListener(this);
 		
 		//labelFunkcjaCelu
 		JLabel labelFunkcjaCelu = new JLabel("<html><center>FUNKCJA CELU:</center></html>");
@@ -120,6 +132,33 @@ public class MainWindow extends JFrame implements ActionListener {
 		}
 		if(e.getSource().equals(edytujFunkcjeCelu)) {
 			fcelu.setVisible(true);
+		}
+		
+		if(e.getSource().equals(menuImportXML)){
+			JFileChooser fileChooser = new JFileChooser("./");
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("XML FILES", "xml", "xml");
+			fileChooser.setFileFilter(filter);
+			if(fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			File myFile = fileChooser.getSelectedFile();
+			prog.importFromXML(myFile.getPath());
+			JOptionPane.showMessageDialog(null, "Plik "
+			+ myFile.getName()
+			+ " zaimportowany poprawanie!");
+			} 
+			this.updateOgraniczenia();
+
+		}
+		
+		if(e.getSource().equals(menuEksportXML)){
+			JFileChooser fileChooser = new JFileChooser("./");
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("XML FILES", "xml", "xml");
+			fileChooser.setFileFilter(filter);
+			if(fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			File myFile = fileChooser.getSelectedFile();
+			prog.exportToXML(myFile.getPath() + ".xml");
+			JOptionPane.showMessageDialog(null, "Poprawnie zapisano plik " + myFile.getName() + ".xml");
+			}
+
 		}
 		
 	}

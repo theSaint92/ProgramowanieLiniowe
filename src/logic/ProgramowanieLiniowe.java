@@ -5,9 +5,15 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
@@ -410,5 +416,179 @@ public class ProgramowanieLiniowe {
 		listaOgraniczen.add(new Ograniczenie(0.0,1.0,"<=",TOOBIGVALUE));
 		listaOgraniczen.add(new Ograniczenie(0.0,1.0,">=",-TOOBIGVALUE));
 	}
+
+	public void exportToXML(String sciezka) {
+		//Zapisanie tej tablicy do pliku
+		File plik = new File(sciezka);
+		
+		try	{
+			plik.createNewFile();
+			FileWriter strumienZapisu = new FileWriter(plik);
+			strumienZapisu.write("<ProgramowanieLiniowe>\n");
+			
+			//Funkcja Celu
+			if (funkcjaCelu != null) {
+				strumienZapisu.write("\t<FunkcjaCelu>\n");
+				
+				strumienZapisu.write("\t\t<A>");
+				strumienZapisu.write(Double.toString(funkcjaCelu.getX1()));
+				strumienZapisu.write("</A>\n");
+				
+				strumienZapisu.write("\t\t<B>");
+				strumienZapisu.write(Double.toString(funkcjaCelu.getX2()));
+				strumienZapisu.write("</B>\n");
+				
+				strumienZapisu.write("\t\t<Cel>");
+				strumienZapisu.write(funkcjaCelu.getCel());
+				strumienZapisu.write("</Cel>\n");
+				
+				strumienZapisu.write("\t</FunkcjaCelu>\n");
+			}
+			
+			//Ograniczenia
+			for (int i=4; i < listaOgraniczen.size(); i++) {
+				strumienZapisu.write("\t<Ograniczenie>\n");
+				
+				strumienZapisu.write("\t\t<A>");
+				strumienZapisu.write(Double.toString(listaOgraniczen.get(i).getX1()));
+				strumienZapisu.write("</A>\n");
+				
+				strumienZapisu.write("\t\t<B>");
+				strumienZapisu.write(Double.toString(listaOgraniczen.get(i).getX2()));
+				strumienZapisu.write("</B>\n");
+				
+				strumienZapisu.write("\t\t<Znak>");
+				String zapis = "";
+				if (listaOgraniczen.get(i).getZnak().equals("<=")) zapis = "le";
+				if (listaOgraniczen.get(i).getZnak().equals(">=")) zapis = "ge";
+				if (listaOgraniczen.get(i).getZnak().equals("=")) zapis = "eq";
+				strumienZapisu.write(zapis);
+				strumienZapisu.write("</Znak>\n");
+				
+				strumienZapisu.write("\t\t<C>");
+				strumienZapisu.write(Double.toString(listaOgraniczen.get(i).getOgraniczenie()));
+				strumienZapisu.write("</C>\n");
+				
+				strumienZapisu.write("\t</Ograniczenie>\n");
+			}
+			strumienZapisu.write("</ProgramowanieLiniowe>");
+			strumienZapisu.close();
+		}
+		catch (IOException io)												
+			{System.out.println(io.getMessage());}
+		catch (Exception se)
+			{System.err.println("blad sec");}
+	}
+	
+	public void importFromXML(String sciezka) {
+		
+		this.clearOgraniczenia();
+		
+		File plik = new File(sciezka);
+		
+
+		int beginIndex;
+		int endIndex;
+		
+		try {
+			Scanner in = new Scanner(plik);
+			while (in.hasNextLine()) {
+				
+				double A = 0;
+				double B = 0;
+				double C = 0;
+				String temp = "";
+				
+				String str = in.nextLine();
+				if(str.contains("<FunkcjaCelu>")){
+					while (!str.contains("</FunkcjaCelu>")) {
+					
+						//Zgarniamy A
+						if (str.matches("(.*)<A>(.*)</A>(.*)")) {
+							
+							beginIndex = str.indexOf("<A>") + 3;
+							endIndex = str.indexOf("</A>");
+							String substr =	str.substring(beginIndex, endIndex);
+							A = Double.parseDouble(substr);
+						}
+						
+						//Zgarniamy B
+						if (str.matches("(.*)<B>(.*)</B>(.*)")) {
+							
+							beginIndex = str.indexOf("<B>") + 3;
+							endIndex = str.indexOf("</B>");
+							String substr =	str.substring(beginIndex, endIndex);
+							B = Double.parseDouble(substr);
+						}
+						
+						//Zgarniamy Cel
+						if (str.matches("(.*)<Cel>(.*)</Cel>(.*)")) {
+							
+							beginIndex = str.indexOf("<Cel>") + 5;
+							endIndex = str.indexOf("</Cel>");
+							temp =	str.substring(beginIndex, endIndex);
+						}
+						
+						str = in.nextLine();
+					}
+					
+					this.funkcjaCelu = new FunkcjaCelu(A,B,temp);
+				}
+				
+				if(str.contains("<Ograniczenie>")){
+					while (!str.contains("</Ograniczenie>")) {
+					
+						//Zgarniamy A
+						if (str.matches("(.*)<A>(.*)</A>(.*)")) {
+							
+							beginIndex = str.indexOf("<A>") + 3;
+							endIndex = str.indexOf("</A>");
+							String substr =	str.substring(beginIndex, endIndex);
+							A = Double.parseDouble(substr);
+						}
+						
+						//Zgarniamy B
+						if (str.matches("(.*)<B>(.*)</B>(.*)")) {
+							
+							beginIndex = str.indexOf("<B>") + 3;
+							endIndex = str.indexOf("</B>");
+							String substr =	str.substring(beginIndex, endIndex);
+							B = Double.parseDouble(substr);
+						}
+						
+						//Zgarniamy C
+						if (str.matches("(.*)<C>(.*)</C>(.*)")) {
+							
+							beginIndex = str.indexOf("<C>") + 3;
+							endIndex = str.indexOf("</C>");
+							String substr =	str.substring(beginIndex, endIndex);
+							C = Double.parseDouble(substr);
+						}
+						
+						//Zgarniamy Znak
+						if (str.matches("(.*)<Cel>(.*)</Cel>(.*)")) {
+							
+							beginIndex = str.indexOf("<Znak>") + 6;
+							endIndex = str.indexOf("</Znak>");
+							temp =	str.substring(beginIndex, endIndex);
+						}
+						
+						str = in.nextLine();
+					}
+					
+					if(temp == "le") temp = "<=";
+					if(temp == "ge") temp = ">=";
+					if(temp == "eq") temp = "=";
+					this.addOgraniczenie(A,B,temp,C);
+				}
+			}
+				
+			in.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("NIE MA TAKIEGO PLIKU!");
+			e.printStackTrace();
+		}
+	}
+
 }
 
