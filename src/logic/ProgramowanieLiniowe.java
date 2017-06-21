@@ -2,20 +2,15 @@ package logic;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
-
-import javax.imageio.ImageIO;
 
 public class ProgramowanieLiniowe {
 
@@ -28,7 +23,7 @@ public class ProgramowanieLiniowe {
 	private double pointX;
 	private double pointY;
 	private double bestValue;
-	private BufferedImage I;
+	//private BufferedImage I;
 
 	
 	public ProgramowanieLiniowe() {
@@ -68,9 +63,9 @@ public class ProgramowanieLiniowe {
 		return result;
 	}
 	
-	public int getResult() {
+	public String getResult() {
 		
-		int result = 9;
+		String result = "Nieznany blad";
 		//result = 0 || Poprawnie rozwiazany
 		//result = 1 || Uklad nieoznaczony
 		//result = 2 || Uklad tozsamosciowy
@@ -79,7 +74,7 @@ public class ProgramowanieLiniowe {
 		
 		//Sprawdzamy czy funkcjaCelu jest zdefiniowana
 		if (funkcjaCelu == null) {
-			return 3;
+			return "Funkcja celu niezdefiniowana!";
 		}
 		
 		//Wyznaczamy zbior punktow przeciecia ograniczen
@@ -127,7 +122,7 @@ public class ProgramowanieLiniowe {
 		
 		//Sprawdzenie czy uklad nie jest sprzeczny
 		if (x.size() == 0) {
-			return 1;
+			return "Uklad sprzeczny";
 		}
 		
 	
@@ -139,7 +134,7 @@ public class ProgramowanieLiniowe {
 					bestValue = temp;
 					pointX = x.get(i);
 					pointY = y.get(i);
-					result = 0;
+					result = "f( " + pointX + " , " + pointY + " ) = " + bestValue;
 				}
 			}
 			
@@ -152,14 +147,14 @@ public class ProgramowanieLiniowe {
 					bestValue = temp;
 					pointX = x.get(i);
 					pointY = y.get(i);
-					result = 0;
+					result = "f( " + pointX + " , " + pointY + " ) = " + bestValue;
 				}
 			}
 		}
 		
 		//Sprawdzenie czy uklad nie jest tozsamosciowy
 		if (pointX == TOOBIGVALUE || pointY == TOOBIGVALUE || pointX == -TOOBIGVALUE || pointY == -TOOBIGVALUE) {
-			return 2;
+			return "Uklad tozsamosciowy";
 		}
 		
 		return result;
@@ -167,7 +162,7 @@ public class ProgramowanieLiniowe {
 	}
 
 	public BufferedImage rysujZbiorDopuszczalny(int size) {
-		I = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+		BufferedImage I = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
 		
 		Graphics2D g = I.createGraphics();
 		final int BORDER_GAP = 20;
@@ -176,23 +171,37 @@ public class ProgramowanieLiniowe {
 	     * Zakres w jakim rysujemy
 	     * ==========================
 	     */
-		double minX = Double.MAX_VALUE;
-		double maxX = Double.MIN_VALUE;
-		double minY = Double.MAX_VALUE;
-		double maxY = Double.MIN_VALUE;
-		for(int i=0; i<x.size(); i++) {
-			if (x.get(i) < minX && Math.abs(x.get(i)) != TOOBIGVALUE ) {
-				minX = x.get(i);
+		
+		double minX;
+		double maxX;
+		double minY;
+		double maxY;
+		
+		if (x != null) {
+			minX = Double.MAX_VALUE;
+			maxX = Double.MIN_VALUE;
+			minY = Double.MAX_VALUE;
+			maxY = Double.MIN_VALUE;
+			for(int i=0; i<x.size(); i++) {
+				if (x.get(i) < minX && Math.abs(x.get(i)) != TOOBIGVALUE ) {
+					minX = x.get(i);
+				}
+				if (x.get(i) > maxX && Math.abs(x.get(i)) != TOOBIGVALUE) {
+					maxX = x.get(i);
+				}
+				if (y.get(i) < minY && Math.abs(y.get(i)) != TOOBIGVALUE) {
+					minY = y.get(i);
+				}
+				if (y.get(i) > maxY && Math.abs(y.get(i)) != TOOBIGVALUE) {
+					maxY = y.get(i);
+				}
 			}
-			if (x.get(i) > maxX && Math.abs(x.get(i)) != TOOBIGVALUE) {
-				maxX = x.get(i);
-			}
-			if (y.get(i) < minY && Math.abs(y.get(i)) != TOOBIGVALUE) {
-				minY = y.get(i);
-			}
-			if (y.get(i) > maxY && Math.abs(y.get(i)) != TOOBIGVALUE) {
-				maxY = y.get(i);
-			}
+		}
+		else {
+			minX = -5;
+			maxX = 5;
+			minY = -5;
+			maxY = 5;
 		}
 		
 		if (minX == Double.MAX_VALUE) minX =-TOOBIGVALUE;
@@ -215,7 +224,7 @@ public class ProgramowanieLiniowe {
 	     * Rysowanie ograniczen
 	     * ==========================
 	     */
-		Polygon pol = new Polygon();
+		//Polygon pol = new Polygon();
 		
 		
 		
@@ -224,27 +233,22 @@ public class ProgramowanieLiniowe {
 		/* ==========================
 	     * DRAW VORONOI DIAGRAM
 	     * ==========================
-	     *
+	     **/
 		Random rand = new Random();
-		int[] color = new int[tablica.length];
-		int[] px = new int[tablica.length];
-		int[] py = new int[tablica.length];
-		
-		for (int i = 0; i < tablica.length; i++) {
-			px[i] = convertToPixelCoords(tablica[i][0],minX,maxX,0,size);
-			py[i] = convertToPixelCoords(tablica[i][1],minY,maxY,0,size);
-			color[i] = rand.nextInt(16777215);
-		}
+		int color = rand.nextInt(16777215);
+
 		
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				int n = 0;
-				for (byte i = 0; i < tablica.length; i++) {
-					if (distance(px[i], py[i], x, y) < distance(px[n], py[n], x, y)) {
-						n = i;
+				for (byte i = 0; i < listaOgraniczen.size(); i++) {
+					double x1 = convertToDoublePoints(x,0,size,minX,maxX);
+					double x2 = convertToDoublePoints(y,0,size,minY,maxY);
+					if (!listaOgraniczen.get(i).isConditionTrue(x1, x2)) {
+						n+=1;
 					}
 				}
-				I.setRGB(x, size - y-1, color[n]);
+				if(n==0)I.setRGB(x, size - y-1, color);
 			}
 		}
         
@@ -353,13 +357,6 @@ public class ProgramowanieLiniowe {
 		    }
 		}
 		
-		//Wyrzucamy do png
-		try {
-			ImageIO.write(I, "png", new File("voronoi.png"));
-		} catch (IOException e) {
- 
-		}
-		
 		return I;
  
 	}
@@ -395,6 +392,19 @@ public class ProgramowanieLiniowe {
 		double widthDouble = value - minDouble;
 		
 		result = (int)Math.round(widthDouble * maxWidthInt/maxWidthDouble);
+		
+		return result;
+	}
+	
+	private double convertToDoublePoints(int value, int minInt, int maxInt, double minDouble, double maxDouble) {
+		double result;
+		
+		double maxWidthDouble = maxDouble - minDouble;
+		double maxWidthInt = maxInt - minInt;
+		
+		double widthInt = value - minInt;
+		
+		result = widthInt * (maxWidthDouble/maxWidthInt);
 		
 		return result;
 	}
@@ -533,6 +543,7 @@ public class ProgramowanieLiniowe {
 					}
 					
 					this.funkcjaCelu = new FunkcjaCelu(A,B,temp);
+					
 				}
 				
 				if(str.contains("<Ograniczenie>")){
@@ -566,7 +577,7 @@ public class ProgramowanieLiniowe {
 						}
 						
 						//Zgarniamy Znak
-						if (str.matches("(.*)<Cel>(.*)</Cel>(.*)")) {
+						if (str.matches("(.*)<Znak>(.*)</Znak>(.*)")) {
 							
 							beginIndex = str.indexOf("<Znak>") + 6;
 							endIndex = str.indexOf("</Znak>");
@@ -576,10 +587,11 @@ public class ProgramowanieLiniowe {
 						str = in.nextLine();
 					}
 					
-					if(temp == "le") temp = "<=";
-					if(temp == "ge") temp = ">=";
-					if(temp == "eq") temp = "=";
+					if(temp.equals("le")) temp = "<=";
+					if(temp.equals("ge")) temp = ">=";
+					if(temp.equals("eq")) temp = "=";
 					this.addOgraniczenie(A,B,temp,C);
+
 				}
 			}
 				

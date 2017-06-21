@@ -1,9 +1,9 @@
 package gui;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -15,7 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import logic.Ograniczenie;
 import logic.ProgramowanieLiniowe;
 
@@ -36,6 +35,10 @@ public class MainWindow extends JFrame implements ActionListener {
 	private JButton edytujFunkcjeCelu;
 	private JTextArea textOgraniczenia;
 	private JButton dodajLubUsunOgraniczenie;
+	private JButton rozwiaz;
+	private Rysunek rys;
+
+	private JLabel labelRozwiazanie2;
 	
 	
 
@@ -43,7 +46,7 @@ public class MainWindow extends JFrame implements ActionListener {
 		
 		//Podstawowe ustawienia
 		this.prog = prog;
-		setSize(700, 500);
+		setSize(680, 510);
 		setTitle("Programowanie Liniowe");
 		setLayout(null);
 		
@@ -65,6 +68,7 @@ public class MainWindow extends JFrame implements ActionListener {
 		menuPlik.add(menuEksportXML);
 		menuPlik.add(menuImportXML);
 		menuPomoc.add(menuOProgramie);
+	
 		
 		menuEksportXML.addActionListener(this);
 		menuImportXML.addActionListener(this);
@@ -96,14 +100,35 @@ public class MainWindow extends JFrame implements ActionListener {
 		textOgraniczenia.setEditable(false);
 		textOgraniczenia.setText("Wprowadz Ograniczenia");
 		JScrollPane scrollPane = new JScrollPane(textOgraniczenia);
-		scrollPane.setBounds(20, 160, 300, 200);
+		scrollPane.setBounds(20, 160, 300, 210);
 		add(scrollPane);
 		
 		//BUTTON dodajOgraniczenie
 		dodajLubUsunOgraniczenie = new JButton("Dodaj lub Usun Ogranicznia");
-		dodajLubUsunOgraniczenie.setBounds(20,370,300,50);
+		dodajLubUsunOgraniczenie.setBounds(20,380,300,50);
 		dodajLubUsunOgraniczenie.addActionListener(this);
 		add(dodajLubUsunOgraniczenie);
+		
+		//labelFunkcjaCelu
+		JLabel labelRozwiazanie = new JLabel("<html><center>Rozwiazanie:</center></html>");
+		labelRozwiazanie.setBounds(340, 20, 300, 20);
+		add(labelRozwiazanie);
+		
+		labelRozwiazanie2 = new JLabel("");
+		labelRozwiazanie2.setBounds(340, 40, 300, 20);
+		add(labelRozwiazanie2);
+		
+		//BUTTON dodajOgraniczenie
+		rozwiaz = new JButton("Rozwiaz");
+		rozwiaz.setBounds(340,380,300,50);
+		rozwiaz.addActionListener(this);
+		add(rozwiaz);
+		
+		//Rysunek
+		//rys = new Rysunek(prog.rysujZbiorDopuszczalny(300));
+		//rys.setBounds(340, 70, 300, 300);
+		//add(rys);
+		
 		
 	}
 	
@@ -146,6 +171,7 @@ public class MainWindow extends JFrame implements ActionListener {
 			+ " zaimportowany poprawanie!");
 			} 
 			this.updateOgraniczenia();
+			getTextFunkcjaCelu().setText(prog.getFunkcjaCelu().toString());
 
 		}
 		
@@ -155,10 +181,27 @@ public class MainWindow extends JFrame implements ActionListener {
 			fileChooser.setFileFilter(filter);
 			if(fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File myFile = fileChooser.getSelectedFile();
-			prog.exportToXML(myFile.getPath() + ".xml");
+			if (!myFile.getPath().endsWith(".xml")) {
+				prog.exportToXML(myFile.getPath() + ".xml");
+			}
 			JOptionPane.showMessageDialog(null, "Poprawnie zapisano plik " + myFile.getName() + ".xml");
 			}
 
+		}
+		
+		if(e.getSource().equals(menuOProgramie)){
+			JOptionPane.showMessageDialog(null, "Autor: Adrian Grzelak",
+					"O programie", JOptionPane.INFORMATION_MESSAGE);
+		}
+		
+		if(e.getSource().equals(rozwiaz)){
+			labelRozwiazanie2.setText(prog.getResult());
+			
+			rys = new Rysunek(prog.rysujZbiorDopuszczalny(300));
+			rys.setBounds(340, 70, 300, 300);
+			rys.repaint();
+			add(rys);
+			this.repaint();
 		}
 		
 	}
