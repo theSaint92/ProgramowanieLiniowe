@@ -118,11 +118,11 @@ public class ProgramowanieLiniowe {
 		
 		//Przefiltrujemy jeszcze "powtórki"
 		for (int i=0; i<x.size() ; i++) {
-			for (int j=1; j < x.size(); j++) {
+			for (int j=i+1; j < x.size(); j++) {
 				if ((x.get(i) == x.get(j)) && (y.get(i) == y.get(j))) {
-					x.remove(i);
-					y.remove(i);
-					i -= 1;
+					x.remove(j);
+					y.remove(j);
+					j -= 1;
 					break;
 				}
 			}
