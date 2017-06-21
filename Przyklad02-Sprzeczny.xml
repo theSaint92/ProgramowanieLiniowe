@@ -1,0 +1,31 @@
+<ProgramowanieLiniowe>
+	<FunkcjaCelu>
+		<A>23.0</A>
+		<B>4.0</B>
+		<Cel>max</Cel>
+	</FunkcjaCelu>
+	<Ograniczenie>
+		<A>1.0</A>
+		<B>1.0</B>
+		<Znak>le</Znak>
+		<C>1.0</C>
+	</Ograniczenie>
+	<Ograniczenie>
+		<A>2.0</A>
+		<B>3.0</B>
+		<Znak>ge</Znak>
+		<C>6.0</C>
+	</Ograniczenie>
+	<Ograniczenie>
+		<A>1.0</A>
+		<B>0.0</B>
+		<Znak>ge</Znak>
+		<C>0.0</C>
+	</Ograniczenie>
+	<Ograniczenie>
+		<A>0.0</A>
+		<B>1.0</B>
+		<Znak>ge</Znak>
+		<C>0.0</C>
+	</Ograniczenie>
+</ProgramowanieLiniowe>

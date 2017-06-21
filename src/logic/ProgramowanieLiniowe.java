@@ -2,6 +2,7 @@ package logic;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -66,15 +67,14 @@ public class ProgramowanieLiniowe {
 	public String getResult() {
 		
 		String result = "Nieznany blad";
-		//result = 0 || Poprawnie rozwiazany
-		//result = 1 || Uklad nieoznaczony
-		//result = 2 || Uklad tozsamosciowy
-		//result = 3 || Blad - funkcja celu niezdefiniowana
-		//result = 9 || Inny blad - niehandlowany
 		
 		//Sprawdzamy czy funkcjaCelu jest zdefiniowana
 		if (funkcjaCelu == null) {
 			return "Funkcja celu niezdefiniowana!";
+		}
+		
+		if (listaOgraniczen.size() <= 4) {
+			return "Nie zdefiniowana ograniczen!";
 		}
 		
 		//Wyznaczamy zbior punktow przeciecia ograniczen
@@ -98,7 +98,7 @@ public class ProgramowanieLiniowe {
 					double wyznacznikY = A1*C2 - A2*C1;
 					x.add(wyznacznikX/wyznacznik);
 					y.add(wyznacznikY/wyznacznik);
-					System.out.println("DODANO PUNKT [ " + wyznacznikX/wyznacznik + " , " + wyznacznikY/wyznacznik + " ]");
+					//System.out.println("DODANO PUNKT [ " + wyznacznikX/wyznacznik + " , " + wyznacznikY/wyznacznik + " ]");
 				}
 			}
 		}
@@ -116,8 +116,20 @@ public class ProgramowanieLiniowe {
 			}
 		}
 		
+		//Przefiltrujemy jeszcze "powtórki"
 		for (int i=0; i<x.size() ; i++) {
-			System.out.println("ZOSTAL PUNKT [ " +x.get(i) + " , " + y.get(i) + " ]");
+			for (int j=1; j < x.size(); j++) {
+				if ((x.get(i) == x.get(j)) && (y.get(i) == y.get(j))) {
+					x.remove(i);
+					y.remove(i);
+					i -= 1;
+					break;
+				}
+			}
+		}
+		
+		for (int i=0; i<x.size() ; i++) {
+		 System.out.println("ZOSTAL PUNKT [ " +x.get(i) + " , " + y.get(i) + " ]");
 		}
 		
 		//Sprawdzenie czy uklad nie jest sprzeczny
@@ -140,7 +152,7 @@ public class ProgramowanieLiniowe {
 			
 		}
 		if (funkcjaCelu.getCel().equals("max")) {
-			bestValue = Double.MIN_VALUE;
+			bestValue = -Double.MAX_VALUE;
 			for (int i=0; i<x.size(); i++) {
 				double temp = funkcjaCelu.valueOf(x.get(i), y.get(i));
 				if(temp > bestValue) {
@@ -178,24 +190,42 @@ public class ProgramowanieLiniowe {
 		double maxY;
 		
 		if (x != null) {
-			minX = Double.MAX_VALUE;
-			maxX = Double.MIN_VALUE;
-			minY = Double.MAX_VALUE;
-			maxY = Double.MIN_VALUE;
-			for(int i=0; i<x.size(); i++) {
-				if (x.get(i) < minX && Math.abs(x.get(i)) != TOOBIGVALUE ) {
-					minX = x.get(i);
+			if (x.size() != 0) {
+				minX = Double.MAX_VALUE;
+				maxX = -Double.MAX_VALUE;
+				minY = Double.MAX_VALUE;
+				maxY = -Double.MAX_VALUE;
+				for(int i=0; i<x.size(); i++) {
+					if (x.get(i) < minX) { //&& Math.abs(x.get(i)) != TOOBIGVALUE ) {
+						minX = x.get(i);
+					}
+					if (x.get(i) > maxX) { //&& Math.abs(x.get(i)) != TOOBIGVALUE) {
+						maxX = x.get(i);
+					}
+					if (y.get(i) < minY) { //&& Math.abs(y.get(i)) != TOOBIGVALUE) {
+						minY = y.get(i);
+					}
+					if (y.get(i) > maxY) { //&& Math.abs(y.get(i)) != TOOBIGVALUE) {
+						maxY = y.get(i);
+					}
+				
+					System.out.println( x.get(i) + " " + (x.get(i) > maxX) + " > " + maxX);
 				}
-				if (x.get(i) > maxX && Math.abs(x.get(i)) != TOOBIGVALUE) {
-					maxX = x.get(i);
-				}
-				if (y.get(i) < minY && Math.abs(y.get(i)) != TOOBIGVALUE) {
-					minY = y.get(i);
-				}
-				if (y.get(i) > maxY && Math.abs(y.get(i)) != TOOBIGVALUE) {
-					maxY = y.get(i);
-				}
+				double wideX = maxX - minX;
+				double wideY = maxY - minY;
+				
+				maxX += wideX/5;
+				minX -= wideX/5;
+				maxY += wideY/5;
+				minY -= wideY/5;
 			}
+			else {
+				minX = -5;
+				maxX = 5;
+				minY = -5;
+				maxY = 5;
+			}
+			
 		}
 		else {
 			minX = -5;
@@ -204,10 +234,10 @@ public class ProgramowanieLiniowe {
 			maxY = 5;
 		}
 		
-		if (minX == Double.MAX_VALUE) minX =-TOOBIGVALUE;
-		if (maxX == Double.MIN_VALUE) maxX = TOOBIGVALUE;
-		if (minY == Double.MAX_VALUE) minY =-TOOBIGVALUE;
-		if (maxY == Double.MIN_VALUE) maxY = TOOBIGVALUE;
+		if (minX <= -TOOBIGVALUE) minX =-TOOBIGVALUE;
+		if (maxX >= TOOBIGVALUE) maxX = TOOBIGVALUE;
+		if (minY <= -TOOBIGVALUE) minY =-TOOBIGVALUE;
+		if (maxY >= TOOBIGVALUE) maxY = TOOBIGVALUE;
 		
 		if (minX == maxX) {
 			minX = minX - 1;
@@ -219,21 +249,17 @@ public class ProgramowanieLiniowe {
 			maxY = maxY + 1;
 		}
 		
-
+		System.out.println("minX " + minX);
+		System.out.println("maxX " + maxX);
+		System.out.println("minY" + minY);
+		System.out.println("maxY " + maxY);
+		
+			
+		
 		/* ==========================
 	     * Rysowanie ograniczen
 	     * ==========================
 	     */
-		//Polygon pol = new Polygon();
-		
-		
-		
-		
-		
-		/* ==========================
-	     * DRAW VORONOI DIAGRAM
-	     * ==========================
-	     **/
 		Random rand = new Random();
 		int color = rand.nextInt(16777215);
 
@@ -248,39 +274,12 @@ public class ProgramowanieLiniowe {
 						n+=1;
 					}
 				}
-				if(n==0)I.setRGB(x, size - y-1, color);
+				if(n==0) I.setRGB(x, size - y-1, color);
 			}
 		}
+		
+		System.out.println(convertToDoublePoints(5,0,size,minX,maxX));
         
-		/* ==========================
-	     * PUT BASE POINTS ON DIAGRAM
-	     * ==========================
-	     *
-		g.setColor(Color.BLACK);
-		for (int i = 0; i < tablica.length; i++) {
-			g.fill(new Ellipse2D .Double(px[i] - 2.5, size - py[i] - 2.5, 5, 5));
-		}
-		
-		/* ====================
-	     * PUT PROBE ON DIAGRAM
-	     * ====================
-	     *
-		g.setColor(Color.white);
-		
-		int[] px2 = new int[tablica2.length];
-		int[] py2 = new int[tablica2.length];
-		
-		for (int i = 0; i < tablica2.length; i++) {
-			px2[i] = convertToPixelCoords(tablica2[i][0],minX,maxX,0,size);
-			py2[i] = convertToPixelCoords(tablica2[i][1],minY,maxY,0,size);
-		}
-		
-		g.setColor(Color.WHITE);
-		for (int i = 0; i < tablica2.length; i++) {
-			g.fill(new Ellipse2D .Double(px2[i] - 1.5, size - py2[i] - 1.5, 3, 3));
-		}
-		
-	
 		
 		/* ===================
 	     * CREATE X AND Y AXES
@@ -357,6 +356,26 @@ public class ProgramowanieLiniowe {
 		    }
 		}
 		
+		if (x != null) {
+			if (x.size() == 1) {
+				g.setColor(Color.YELLOW);
+				int xxx = convertToPixelCoords(x.get(0),minX,maxX,0,size);
+				int yyy = convertToPixelCoords(y.get(0),minY,maxY,0,size);
+				g.fill(new Ellipse2D.Double(xxx - 2.5, size - yyy - 2.5, 5, 5));
+			}
+		}
+		
+		if (x != null) {
+			if (x.size() == 2) {
+				g.setColor(Color.YELLOW);
+				int xxx1 = convertToPixelCoords(x.get(0),minX,maxX,0,size);
+				int yyy1 = convertToPixelCoords(y.get(0),minY,maxY,0,size);
+				int xxx2 = convertToPixelCoords(x.get(1),minX,maxX,0,size);
+				int yyy2 = convertToPixelCoords(y.get(1),minY,maxY,0,size);
+				g.drawLine(xxx1, yyy1, xxx2, yyy2);
+			}
+		}
+	
 		return I;
  
 	}
@@ -404,7 +423,7 @@ public class ProgramowanieLiniowe {
 		
 		double widthInt = value - minInt;
 		
-		result = widthInt * (maxWidthDouble/maxWidthInt);
+		result = minDouble + widthInt * (maxWidthDouble/maxWidthInt);
 		
 		return result;
 	}

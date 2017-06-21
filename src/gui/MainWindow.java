@@ -125,9 +125,9 @@ public class MainWindow extends JFrame implements ActionListener {
 		add(rozwiaz);
 		
 		//Rysunek
-		//rys = new Rysunek(prog.rysujZbiorDopuszczalny(300));
-		//rys.setBounds(340, 70, 300, 300);
-		//add(rys);
+		rys = new Rysunek(prog.rysujZbiorDopuszczalny(300));
+		rys.setBounds(340, 70, 300, 300);
+		add(rys);
 		
 		
 	}
@@ -197,10 +197,11 @@ public class MainWindow extends JFrame implements ActionListener {
 		if(e.getSource().equals(rozwiaz)){
 			labelRozwiazanie2.setText(prog.getResult());
 			
-			rys = new Rysunek(prog.rysujZbiorDopuszczalny(300));
-			rys.setBounds(340, 70, 300, 300);
+			rys.setImage(prog.rysujZbiorDopuszczalny(300));
+			//rys = new Rysunek(prog.rysujZbiorDopuszczalny(300));
+			//rys.setBounds(340, 70, 300, 300);
 			rys.repaint();
-			add(rys);
+			//add(rys);
 			this.repaint();
 		}
 		
