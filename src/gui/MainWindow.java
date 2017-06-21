@@ -123,17 +123,15 @@ public class MainWindow extends JFrame implements ActionListener {
 		}
 		
 	}
-	
-	public void updateFunkcjaCelu() {
-		
-	}
+
 	
 	public void updateOgraniczenia() {
 		List<Ograniczenie> ograniczenia = prog.getListaOgraniczen();
 		String lista = "";
-		for(int i=3; i<ograniczenia.size(); i++) {
+		for(int i=4; i<ograniczenia.size(); i++) {
 			lista += ograniczenia.get(i).toString() + "\n";
 		}
+		if (lista == "") lista = "Wprowadz Ograniczenia";
 		this.textOgraniczenia.setText(lista);
 	}
 

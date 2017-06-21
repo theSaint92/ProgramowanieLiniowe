@@ -27,14 +27,7 @@ public class ProgramowanieLiniowe {
 	
 	public ProgramowanieLiniowe() {
 		super();
-		this.listaOgraniczen = new ArrayList<Ograniczenie>();
-		
-		//Ograniczenia duzych liczb
-		listaOgraniczen.add(new Ograniczenie(1.0,0.0,"<=",TOOBIGVALUE));
-		listaOgraniczen.add(new Ograniczenie(1.0,0.0,">=",-TOOBIGVALUE));		
-		listaOgraniczen.add(new Ograniczenie(0.0,1.0,"<=",TOOBIGVALUE));
-		listaOgraniczen.add(new Ograniczenie(0.0,1.0,">=",-TOOBIGVALUE));
-		
+		clearOgraniczenia();
 		this.funkcjaCelu = null;
 	}
 	
@@ -45,6 +38,10 @@ public class ProgramowanieLiniowe {
 			result = 0;
 		}
 		return result;
+	}
+	
+	public void addOgraniczenieByObject(Ograniczenie o) {
+		listaOgraniczen.add(o);
 	}
 	
 	public int delOgraniczenie(int i) {
@@ -404,6 +401,14 @@ public class ProgramowanieLiniowe {
 		return listaOgraniczen;
 	}
 	
-	
+	public void clearOgraniczenia() {
+		this.listaOgraniczen = new ArrayList<Ograniczenie>();
+		
+		//Ograniczenia duzych liczb
+		listaOgraniczen.add(new Ograniczenie(1.0,0.0,"<=",TOOBIGVALUE));
+		listaOgraniczen.add(new Ograniczenie(1.0,0.0,">=",-TOOBIGVALUE));		
+		listaOgraniczen.add(new Ograniczenie(0.0,1.0,"<=",TOOBIGVALUE));
+		listaOgraniczen.add(new Ograniczenie(0.0,1.0,">=",-TOOBIGVALUE));
+	}
 }
 

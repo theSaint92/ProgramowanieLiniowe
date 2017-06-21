@@ -115,14 +115,6 @@ public class OgraniczeniaWindow extends JFrame implements ActionListener {
 		zatwierdz.addActionListener(this);
 		add(zatwierdz);
 		
-		
-		
-		
-		
-		
-		
-		
-		
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -168,7 +160,12 @@ public class OgraniczeniaWindow extends JFrame implements ActionListener {
 			}
 		}	
 		if(e.getSource().equals(zatwierdz)) {
-			
+			prog.clearOgraniczenia();
+		    for (int i=0; i<listaOgraniczenModel.size(); i++) {
+		        prog.addOgraniczenieByObject(listaOgraniczenModel.getElementAt(i));
+		    }
+		    main.updateOgraniczenia();
+		    this.setVisible(false);
 		}
 	}
 	
