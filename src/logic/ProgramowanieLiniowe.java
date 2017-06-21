@@ -23,10 +23,7 @@ public class ProgramowanieLiniowe {
 	private double pointY;
 	private double bestValue;
 	private BufferedImage I;
-	
-	public FunkcjaCelu getFunkcjaCelu() {
-		return funkcjaCelu;
-	}
+
 	
 	public ProgramowanieLiniowe() {
 		super();
@@ -165,7 +162,6 @@ public class ProgramowanieLiniowe {
 		return result;
 		
 	}
-
 
 	public BufferedImage rysujZbiorDopuszczalny(int size) {
 		I = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
@@ -364,8 +360,6 @@ public class ProgramowanieLiniowe {
 		return I;
  
 	}
-	
-
 
 	private double findDenomination(double width) {
 		double result = 1.0;
@@ -389,7 +383,7 @@ public class ProgramowanieLiniowe {
 		return result;
 	}
 	
-	int convertToPixelCoords(double value, double minDouble, double maxDouble, int minInt, int maxInt) {
+	private int convertToPixelCoords(double value, double minDouble, double maxDouble, int minInt, int maxInt) {
 		int result;
 		
 		double maxWidthDouble = maxDouble - minDouble;
@@ -401,4 +395,15 @@ public class ProgramowanieLiniowe {
 		
 		return result;
 	}
+	
+	public FunkcjaCelu getFunkcjaCelu() {
+		return funkcjaCelu;
+	}
+
+	public List<Ograniczenie> getListaOgraniczen() {
+		return listaOgraniczen;
+	}
+	
+	
 }
+

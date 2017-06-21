@@ -1,8 +1,8 @@
 package gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,8 +11,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
+import logic.Ograniczenie;
 import logic.ProgramowanieLiniowe;
 
 
@@ -21,6 +21,8 @@ public class MainWindow extends JFrame implements ActionListener {
 	private static final long serialVersionUID = -3880026026104218593L;
 	
 	private fCeluWindow fcelu;
+	private OgraniczeniaWindow ograniczenia;
+	
 	private ProgramowanieLiniowe prog;
 	private JLabel textFunkcjaCelu;
 	private JButton edytujFunkcjeCelu;
@@ -31,18 +33,15 @@ public class MainWindow extends JFrame implements ActionListener {
 
 	public MainWindow(ProgramowanieLiniowe prog) {
 		
-		//Okno funkcji celu
-		fcelu = new fCeluWindow(prog,this);
-		
-		//Okno Ograniczen
-		
+		//Podstawowe ustawienia
 		this.prog = prog;
-		prog.addOgraniczenie(3, 5, ">=", 7);
-		prog.editFunkcjaCelu(2, 3, "min");
-				
 		setSize(700, 500);
 		setTitle("Programowanie Liniowe");
 		setLayout(null);
+		
+		//Okno funkcji celu i ograniczen
+		fcelu = new fCeluWindow(prog,this);
+		ograniczenia = new OgraniczeniaWindow(prog,this);
 		
 		//Dodajemy menu
 		JMenuBar menuBar = new JMenuBar();
@@ -94,10 +93,6 @@ public class MainWindow extends JFrame implements ActionListener {
 		dodajLubUsunOgraniczenie.addActionListener(this);
 		add(dodajLubUsunOgraniczenie);
 		
-		
-
-		
-		
 	}
 	
 	
@@ -106,34 +101,40 @@ public class MainWindow extends JFrame implements ActionListener {
 		return textFunkcjaCelu;
 	}
 
-
-
 	public JButton getEdytujFunkcjeCelu() {
 		return edytujFunkcjeCelu;
 	}
-
-
 
 	public JTextArea getTextOgraniczenia() {
 		return textOgraniczenia;
 	}
 
-
-
 	public JButton getDodajLubUsunOgraniczenie() {
 		return dodajLubUsunOgraniczenie;
 	}
 
-
-
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(dodajLubUsunOgraniczenie)) {
-			
+			ograniczenia.setVisible(true);
+			ograniczenia.updateOgraniczenia();
 		}
 		if(e.getSource().equals(edytujFunkcjeCelu)) {
 			fcelu.setVisible(true);
 		}
 		
+	}
+	
+	public void updateFunkcjaCelu() {
+		
+	}
+	
+	public void updateOgraniczenia() {
+		List<Ograniczenie> ograniczenia = prog.getListaOgraniczen();
+		String lista = "";
+		for(int i=3; i<ograniczenia.size(); i++) {
+			lista += ograniczenia.get(i).toString() + "\n";
+		}
+		this.textOgraniczenia.setText(lista);
 	}
 
 }

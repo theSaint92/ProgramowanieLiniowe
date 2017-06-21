@@ -64,13 +64,13 @@ public class Ograniczenie {
 	@Override
 	public String toString() {
 		if (x1 == 0) {
-			return x2  + "x2 " + znak + " " + ograniczenie;
+			return x2  + "y " + znak + " " + ograniczenie;
 		}
 		else if  (x2 == 0) {
-			return x1  + "x1 " + znak + " " + ograniczenie;
+			return x1  + "x " + znak + " " + ograniczenie;
 		}
 		else {
-			return x1 + "x1 + " + x2  + "x2 " + znak + " " + ograniczenie;
+			return x1 + "x + " + x2  + "y " + znak + " " + ograniczenie;
 		}
 		
 	}
